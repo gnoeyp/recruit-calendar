@@ -2,11 +2,27 @@
 
 import { YearMonth } from '@/utils/year-month';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
+
+const createYearMonth = (yearMonthStr: string): YearMonth | null => {
+  try {
+    const tokens = yearMonthStr.split('-').map(Number);
+    if (tokens.length !== 2) {
+      throw new Error();
+    }
+    const [year, month] = tokens;
+
+    return new YearMonth(year, month);
+  } catch {
+    return null;
+  }
+};
 
 export default function useYearMonth() {
   const { yearmonth: yearMonthStr } = useParams<{ yearmonth: string }>();
-  const [yearMonth, setYearMonth] = useState<YearMonth | null>();
+  const [yearMonth, setYearMonth] = useState<YearMonth | null>(
+    createYearMonth(yearMonthStr),
+  );
   const router = useRouter();
 
   const goTo = useCallback(
@@ -29,18 +45,13 @@ export default function useYearMonth() {
     goTo(currentYearMonth);
   }, [goTo]);
 
-  useEffect(() => {
-    try {
-      const tokens = yearMonthStr.split('-').map(Number);
-      if (tokens.length !== 2) {
-        throw new Error();
-      }
-      const [year, month] = tokens;
-
-      setYearMonth(new YearMonth(year, month));
-    } catch {
+  useLayoutEffect(() => {
+    const newYearMonth = createYearMonth(yearMonthStr);
+    if (newYearMonth === null) {
       goToCurrent();
+      return;
     }
+    setYearMonth(createYearMonth(yearMonthStr));
   }, [yearMonthStr, goToCurrent]);
 
   const handleChange = (newYearMonth: YearMonth) => {
