@@ -18,7 +18,9 @@ export default function DateNavigator({
       >
         <FaAngleLeft />
       </button>
-      {yearMonth.year} - {yearMonth.month}
+      <h1>
+        {yearMonth.year} - {yearMonth.month}
+      </h1>
       <button
         onClick={() => onChange?.(yearMonth.nextMonth())}
         aria-label="next-month"
