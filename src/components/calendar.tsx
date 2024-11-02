@@ -4,11 +4,7 @@ import useYearMonth from '@/lib/use-year-month';
 import DateNavigator from './date-navigator';
 import { JobOpening } from '@/models/job-opening';
 import JobOpeningDisplay from './job-opening-display';
-
-type CalendarCellData = {
-  startingJobOpenings: JobOpening[];
-  endingJobOpenings: JobOpening[];
-};
+import CalendarCell from './calendar-cell';
 
 type CalendarProps = {
   jobOpenings?: JobOpening[];
@@ -23,7 +19,6 @@ export default function Calendar({ jobOpenings = [] }: CalendarProps) {
   const date = new Date(yearMonth.year, yearMonth.month - 1, 1);
 
   while (date.getDay() !== 0) {
-    console.log('a');
     date.setDate(date.getDate() - 1);
   }
 
@@ -38,6 +33,7 @@ export default function Calendar({ jobOpenings = [] }: CalendarProps) {
   }
 
   const jobOpeningData = dates.map((date) => ({
+    date: date,
     startingJobOpenings: jobOpenings.filter(
       (jobOpening) =>
         jobOpening.startTime?.getFullYear() === date.getFullYear() &&
@@ -56,24 +52,55 @@ export default function Calendar({ jobOpenings = [] }: CalendarProps) {
     <div>
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
       <div className="grid grid-cols-7">
-        {jobOpeningData.map((data, index) => {
+        <div className="sticky top-0 bg-gray-200 flex items-center justify-center">
+          SUN
+        </div>
+        <div className="sticky top-0 bg-gray-200 flex items-center justify-center">
+          MON
+        </div>
+        <div className="sticky top-0 bg-gray-200 flex items-center justify-center">
+          TUE
+        </div>
+        <div className="sticky top-0 bg-gray-200 flex items-center justify-center">
+          WED
+        </div>
+        <div className="sticky top-0 bg-gray-200 flex items-center justify-center">
+          THR
+        </div>
+        <div className="sticky top-0 bg-gray-200 flex items-center justify-center">
+          FRI
+        </div>
+        <div className="sticky top-0 bg-gray-200 flex items-center justify-center">
+          SAT
+        </div>
+        {jobOpeningData.map((data) => {
           return (
-            <div key={index}>
-              {data.startingJobOpenings.map((opening) => (
-                <JobOpeningDisplay
-                  key={`starting-${opening.id}`}
-                  jobOpening={opening}
-                  status="starting"
-                />
-              ))}
-              {data.endingJobOpenings.map((opening) => (
-                <JobOpeningDisplay
-                  key={`ending-${opening.id}`}
-                  jobOpening={opening}
-                  status="ending"
-                />
-              ))}
-            </div>
+            <CalendarCell
+              key={data.date.toString()}
+              header={
+                <div className="flex items-center justify-center">
+                  {data.date.getDate()}
+                </div>
+              }
+              content={
+                <>
+                  {data.startingJobOpenings.map((opening) => (
+                    <JobOpeningDisplay
+                      key={`starting-${opening.id}`}
+                      jobOpening={opening}
+                      status="starting"
+                    />
+                  ))}
+                  {data.endingJobOpenings.map((opening) => (
+                    <JobOpeningDisplay
+                      key={`ending-${opening.id}`}
+                      jobOpening={opening}
+                      status="ending"
+                    />
+                  ))}
+                </>
+              }
+            />
           );
         })}
       </div>
