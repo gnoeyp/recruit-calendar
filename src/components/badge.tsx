@@ -1,12 +1,15 @@
 import classNames from 'classnames';
 
-type BadgeProps = {
+type TinyBadgeProps = {
   type?: 'light' | 'dark';
   blur?: boolean;
   children?: React.ReactNode;
 };
 
-export default function Badge({ type = 'light', children }: BadgeProps) {
+export default function TinyBadge({
+  type = 'light',
+  children,
+}: TinyBadgeProps) {
   return (
     <div
       className={classNames(

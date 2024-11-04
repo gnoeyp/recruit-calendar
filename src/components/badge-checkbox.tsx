@@ -1,6 +1,5 @@
 import classNames from 'classnames';
-import { useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { useId } from 'react';
 
 type BadgeCheckboxProps = {
   children?: React.ReactNode;
@@ -13,7 +12,7 @@ export default function BadgeCheckbox({
   checked,
   onChange,
 }: BadgeCheckboxProps) {
-  const id = useMemo(() => uuidv4(), []);
+  const id = useId();
   return (
     <div
       className={classNames(

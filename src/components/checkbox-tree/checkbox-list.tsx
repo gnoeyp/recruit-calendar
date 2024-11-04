@@ -52,7 +52,7 @@ export default function CheckboxList({ items, level }: CheckboxListProps) {
 
   return (
     <>
-      <div className="flex flex-col min-w-64 w-64 h-72 py-1 overflow-y-scroll bg-white">
+      <div className="flex flex-col min-w-64 w-64 h-full py-1 overflow-y-scroll bg-white">
         {treeItems.map((item) => (
           <CheckboxListItem
             key={item.value}

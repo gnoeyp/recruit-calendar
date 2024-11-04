@@ -1,5 +1,5 @@
 import { JobOpening } from '@/models/job-opening';
-import Badge from './badge';
+import TinyBadge from './badge';
 
 type JobOpeningDisplayProps = {
   jobOpening: JobOpening;
@@ -12,8 +12,8 @@ export default function JobOpeningDisplay({
 }: JobOpeningDisplayProps) {
   return (
     <div className="flex items-center gap-1 text-sm bg-white hover:bg-slate-100 cursor-pointer select-none">
-      {status === 'starting' && <Badge type="light">시</Badge>}
-      {status === 'ending' && <Badge type="dark">끝</Badge>}
+      {status === 'starting' && <TinyBadge type="light">시</TinyBadge>}
+      {status === 'ending' && <TinyBadge type="dark">끝</TinyBadge>}
       <div className="flex-1">{jobOpening.companyName}</div>
     </div>
   );

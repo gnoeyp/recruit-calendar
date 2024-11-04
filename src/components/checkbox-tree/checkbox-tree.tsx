@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import CheckboxTreeNode from './checkbox-tree-node';
 
 export type CheckboxTreeItem = {
@@ -57,13 +57,22 @@ export const CheckboxTreeData = createContext<{
 type CheckboxTreeProps = {
   items: CheckboxTreeItem[];
   title?: React.ReactNode;
+  onChange?: (values: string[]) => void;
 };
 
-export default function CheckboxTree({ title, items }: CheckboxTreeProps) {
+export default function CheckboxTree({
+  title,
+  items,
+  onChange,
+}: CheckboxTreeProps) {
   const deepest = useMemo(() => findDeepestLevel(items), [items]);
   const leafMap = useMemo(() => constructLeafMap(items, deepest), [items]);
 
   const [checkedValues, setCheckedValues] = useState<string[]>([]);
+
+  useEffect(() => {
+    onChange?.(checkedValues);
+  }, [checkedValues]);
 
   const handleCheck = (value: string, checked: boolean) => {
     const finalLevelValues = leafMap.get(value);
@@ -94,7 +103,7 @@ export default function CheckboxTree({ title, items }: CheckboxTreeProps) {
           <h3 className="text-lg">{title}</h3>{' '}
           <span className="text-sky-500">{totalCount}</span>
         </div>
-        <div className="flex border rounded-xl w-3/4 overflow-hidden">
+        <div className="flex border rounded-xl w-3/4 h-72 overflow-hidden">
           <CheckboxTreeNode items={items} level={0} />
         </div>
       </div>
