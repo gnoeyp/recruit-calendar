@@ -52,7 +52,7 @@ export default function Calendar({ jobOpenings = [] }: CalendarProps) {
   }, [yearMonth, jobOpenings]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-3 items-center pt-3">
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
       <div className="grid grid-cols-7">
         <div className="sticky top-0 bg-gray-200 flex items-center justify-center z-10">

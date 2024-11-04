@@ -11,21 +11,21 @@ export default function DateNavigator({
   onChange,
 }: DateNavigatorProps) {
   return (
-    <div className="flex items-center gap-2 text-lg">
+    <div className="flex items-center gap-5 text-lg">
       <button
         onClick={() => onChange?.(yearMonth.previousMonth())}
         aria-label="previous-month"
       >
-        <FaAngleLeft />
+        <FaAngleLeft size={12} color="#888" />
       </button>
-      <h1>
+      <h1 className="text-xl text-orange-500 font-bold">
         {yearMonth.year} - {yearMonth.month}
       </h1>
       <button
         onClick={() => onChange?.(yearMonth.nextMonth())}
         aria-label="next-month"
       >
-        <FaAngleRight />
+        <FaAngleRight size={12} color="#888" />
       </button>
     </div>
   );
