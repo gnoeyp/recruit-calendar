@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CheckboxTreeNode from './checkbox-tree-node';
 import { CheckboxTreeContext } from './checkbox-tree-context';
 import { CheckboxTreeItem } from './checkbox-tree.types';
@@ -22,19 +22,25 @@ export default function CheckboxTree({
 
   const [checkedValues, setCheckedValues] = useState<string[]>([]);
 
+  const onChangeRef = useRef(onChange);
+
   useEffect(() => {
-    onChange?.(checkedValues);
-  }, [checkedValues, onChange]);
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  useEffect(() => {
+    onChangeRef.current?.(checkedValues);
+  }, [checkedValues]);
 
   const handleCheck = (value: string, checked: boolean) => {
     const finalLevelValues = leafMap.get(value);
     if (checked) {
-      setCheckedValues(
-        Array.from(new Set([...checkedValues, ...(finalLevelValues ?? [])])),
+      setCheckedValues((prevValues) =>
+        Array.from(new Set([...prevValues, ...(finalLevelValues ?? [])])),
       );
     } else {
-      setCheckedValues(
-        checkedValues.filter((v) => !finalLevelValues?.includes(v)),
+      setCheckedValues((prevValues) =>
+        prevValues.filter((v) => !finalLevelValues?.includes(v)),
       );
     }
   };
@@ -52,8 +58,10 @@ export default function CheckboxTree({
     >
       <div className="flex flex-col gap-4">
         <div className="flex gap-2 items-center">
-          <h3 className="text-lg">{title}</h3>{' '}
-          <span className="text-sky-500">{totalCount}</span>
+          <h3 className="text-lg">{title}</h3>
+          <span className="text-sky-500" title="Count">
+            {totalCount}
+          </span>
         </div>
         <div className="flex border rounded-xl w-3/4 h-72 overflow-hidden">
           <CheckboxTreeNode items={items} level={0} />

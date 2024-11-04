@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useId } from 'react';
 
 type MidLevelListItemProps = {
   checked?: boolean;
@@ -19,6 +20,7 @@ export default function MidLevelListItem({
   extra,
   icon,
 }: MidLevelListItemProps) {
+  const id = useId();
   return (
     <div
       className={classNames(
@@ -32,10 +34,11 @@ export default function MidLevelListItem({
         checked={checked}
         onChange={(e) => onChange?.(e.target.checked)}
         className="cursor-pointer"
+        aria-labelledby={id}
       />
       <div className="flex-1 flex justify-between items-center">
         <div className="flex gap-1 items-center text-sm text-gray-600">
-          {content}
+          <label id={id}>{content}</label>
           <div className="text-sky-400 text-xs">{extra}</div>
         </div>
         {icon}
