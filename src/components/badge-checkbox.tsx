@@ -16,8 +16,8 @@ export default function BadgeCheckbox({
   return (
     <div
       className={classNames(
-        'bg-white h-8 flex items-center justify-center  px-4 rounded-full border cursor-pointer text-gray-400 w-max text-sm',
-        !checked && 'hover:bg-gray-100',
+        'h-8 flex items-center justify-center px-4 rounded-full border cursor-pointer text-gray-400 w-max text-sm',
+        !checked && 'bg-white hover:bg-gray-100',
         checked && 'bg-sky-100 text-gray-500 border-sky-300',
       )}
       onClick={() => onChange?.(!checked)}

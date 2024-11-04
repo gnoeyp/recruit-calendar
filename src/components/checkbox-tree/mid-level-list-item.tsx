@@ -38,7 +38,9 @@ export default function MidLevelListItem({
       />
       <div className="flex-1 flex justify-between items-center">
         <div className="flex gap-1 items-center text-sm text-gray-600">
-          <label id={id}>{content}</label>
+          <label id={id} className="cursor-pointer">
+            {content}
+          </label>
           <div className="text-sky-400 text-xs">{extra}</div>
         </div>
         {icon}

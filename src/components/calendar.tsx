@@ -55,9 +55,9 @@ export default function Calendar({ jobOpenings = [] }: CalendarProps) {
   }
 
   return (
-    <div className="flex flex-col gap-3 items-center pt-3">
+    <div className="flex flex-col gap-3 items-center pt-3 w-full">
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 w-full">
         <div className="sticky top-0 bg-gray-200 flex items-center justify-center z-10">
           SUN
         </div>
