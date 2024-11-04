@@ -1,15 +1,25 @@
 import { useCallback, useMemo, useState } from 'react';
-import useCheckboxTree from './use-checkbox-tree';
-import { CheckboxTreeItem } from './checkbox-tree';
-import CheckboxTreeNode from './checkbox-tree-node';
-import CheckboxListItem from './checkbox-list-item';
 import { FaAngleRight } from 'react-icons/fa6';
+import CheckboxTreeNode from './checkbox-tree-node';
+import MidLevelListItem from './mid-level-list-item';
+import { useCheckboxTree } from './checkbox-tree-context';
+import { CheckboxTreeItem } from './checkbox-tree.types';
 
-type CheckboxListProps = {
+type MidLevelListItemData = {
+  label: string;
+  value: string;
+  count: number;
+  checked: boolean;
+  selected: boolean;
+  hasChildren: boolean;
+};
+
+type MidLevelListProps = {
   items: CheckboxTreeItem[];
   level: number;
 };
-export default function CheckboxList({ items, level }: CheckboxListProps) {
+
+export default function MidLevelList({ items, level }: MidLevelListProps) {
   const { checkedValues, onCheck, leafMap } = useCheckboxTree();
 
   const [selected, setSelected] = useState<string>();
@@ -37,7 +47,7 @@ export default function CheckboxList({ items, level }: CheckboxListProps) {
     [leafMap, checkedValues],
   );
 
-  const treeItems = useMemo(
+  const treeItems: MidLevelListItemData[] = useMemo(
     () =>
       items.map((item) => ({
         label: item.label,
@@ -45,26 +55,28 @@ export default function CheckboxList({ items, level }: CheckboxListProps) {
         count: calculateCount(item.value),
         checked: isChecked(item.value),
         selected: isSelected(item.value),
-        hasChildren: item.children && item.children.length > 0,
+        hasChildren: !!item.children && item.children.length > 0,
       })),
-    [items, isChecked, isSelected],
+    [items, isChecked, isSelected, calculateCount],
   );
+
+  const handleSelect = (item: MidLevelListItemData) => {
+    setSelected(item.value);
+    if (!item.hasChildren) {
+      onCheck(item.value, !item.checked);
+    }
+  };
 
   return (
     <>
       <div className="flex flex-col min-w-64 w-64 h-full py-1 overflow-y-scroll bg-white">
         {treeItems.map((item) => (
-          <CheckboxListItem
+          <MidLevelListItem
             key={item.value}
             checked={item.checked}
             onChange={(checked) => onCheck(item.value, checked)}
             selected={item.selected}
-            onSelect={() => {
-              setSelected(item.value);
-              if (!item.hasChildren) {
-                onCheck(item.value, !item.checked);
-              }
-            }}
+            onSelect={() => handleSelect(item)}
             content={item.label}
             extra={item.count > 0 ? item.count : undefined}
             icon={item.hasChildren && <FaAngleRight size={12} color="#888" />}

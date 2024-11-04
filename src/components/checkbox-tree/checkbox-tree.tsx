@@ -1,58 +1,10 @@
 'use client';
 
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CheckboxTreeNode from './checkbox-tree-node';
-
-export type CheckboxTreeItem = {
-  label: string;
-  value: string;
-  children?: CheckboxTreeItem[];
-};
-
-const findDeepestLevel = (tree: CheckboxTreeItem[]): number => {
-  return tree.reduce((result, node) => {
-    if (!node.children || node.children.length === 0) {
-      return result;
-    }
-    return Math.max(result, findDeepestLevel(node.children) + 1);
-  }, 0);
-};
-
-const constructLeafMap = (tree: CheckboxTreeItem[], deepest: number) => {
-  const result = new Map<string, string[]>();
-  const findFinalLevelValues = (
-    node: CheckboxTreeItem,
-    level: number,
-  ): string[] => {
-    if (!node.children || node.children.length === 0) {
-      result.set(node.value, [node.value]);
-      return [node.value];
-    }
-    const values =
-      node.children?.flatMap((child) =>
-        findFinalLevelValues(child, level + 1),
-      ) ?? [];
-    result.set(node.value, values);
-    return values;
-  };
-
-  tree.forEach((node) => {
-    findFinalLevelValues(node, 0);
-  });
-  return result;
-};
-
-export const CheckboxTreeData = createContext<{
-  checkedValues: string[];
-  deepest: number;
-  onCheck: (value: string, checked: boolean) => void;
-  leafMap: Map<string, string[]>;
-}>({
-  checkedValues: [],
-  deepest: 0,
-  onCheck: () => {},
-  leafMap: new Map(),
-});
+import { CheckboxTreeContext } from './checkbox-tree-context';
+import { CheckboxTreeItem } from './checkbox-tree.types';
+import { constructLeafMap, findDeepestLevel } from './checkbox-tree.utils';
 
 type CheckboxTreeProps = {
   items: CheckboxTreeItem[];
@@ -66,13 +18,13 @@ export default function CheckboxTree({
   onChange,
 }: CheckboxTreeProps) {
   const deepest = useMemo(() => findDeepestLevel(items), [items]);
-  const leafMap = useMemo(() => constructLeafMap(items, deepest), [items]);
+  const leafMap = useMemo(() => constructLeafMap(items), [items]);
 
   const [checkedValues, setCheckedValues] = useState<string[]>([]);
 
   useEffect(() => {
     onChange?.(checkedValues);
-  }, [checkedValues]);
+  }, [checkedValues, onChange]);
 
   const handleCheck = (value: string, checked: boolean) => {
     const finalLevelValues = leafMap.get(value);
@@ -90,7 +42,7 @@ export default function CheckboxTree({
   const totalCount = checkedValues.length;
 
   return (
-    <CheckboxTreeData.Provider
+    <CheckboxTreeContext.Provider
       value={{
         checkedValues,
         deepest,
@@ -107,6 +59,6 @@ export default function CheckboxTree({
           <CheckboxTreeNode items={items} level={0} />
         </div>
       </div>
-    </CheckboxTreeData.Provider>
+    </CheckboxTreeContext.Provider>
   );
 }

@@ -1,7 +1,7 @@
-import BadgeList from './badge-list';
-import CheckboxList from './checkbox-list';
-import { CheckboxTreeItem } from './checkbox-tree';
-import useCheckboxTree from './use-checkbox-tree';
+import FinalLevelList from './final-level-list';
+import MidLevelList from './mid-level-list';
+import { useCheckboxTree } from './checkbox-tree-context';
+import { CheckboxTreeItem } from './checkbox-tree.types';
 
 type CheckboxTreeNodeProps = {
   items: CheckboxTreeItem[];
@@ -13,6 +13,6 @@ export default function CheckboxTreeNode({
   level,
 }: CheckboxTreeNodeProps) {
   const { deepest } = useCheckboxTree();
-  if (level === deepest) return <BadgeList items={items} />;
-  return <CheckboxList items={items} level={level} />;
+  if (level === deepest) return <FinalLevelList items={items} />;
+  return <MidLevelList items={items} level={level} />;
 }

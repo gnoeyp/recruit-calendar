@@ -1,27 +1,23 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import BadgeCheckbox from '../badge-checkbox';
-import { CheckboxTreeItem } from './checkbox-tree';
-import useCheckboxTree from './use-checkbox-tree';
+import { CheckboxTreeItem } from './checkbox-tree.types';
+import { useCheckboxTree } from './checkbox-tree-context';
 
 type BadgeListProps = {
   items: CheckboxTreeItem[];
 };
 
-export default function BadgeList({ items }: BadgeListProps) {
+export default function FinalLevelList({ items }: BadgeListProps) {
   const { checkedValues, onCheck } = useCheckboxTree();
-  const isChecked = useCallback(
-    (value: string): boolean => checkedValues.includes(value),
-    [checkedValues],
-  );
 
   const treeItems = useMemo(
     () =>
       items.map((item) => ({
         label: item.label,
         value: item.value,
-        checked: isChecked(item.value),
+        checked: checkedValues.includes(item.value),
       })),
-    [items, isChecked],
+    [items, checkedValues],
   );
 
   return (

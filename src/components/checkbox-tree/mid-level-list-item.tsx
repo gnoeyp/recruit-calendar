@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-type CheckboxListItemProps = {
+type MidLevelListItemProps = {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
   selected?: boolean;
@@ -10,7 +10,7 @@ type CheckboxListItemProps = {
   icon?: React.ReactNode;
 };
 
-export default function CheckboxListItem({
+export default function MidLevelListItem({
   checked,
   onChange,
   selected,
@@ -18,7 +18,7 @@ export default function CheckboxListItem({
   content,
   extra,
   icon,
-}: CheckboxListItemProps) {
+}: MidLevelListItemProps) {
   return (
     <div
       className={classNames(

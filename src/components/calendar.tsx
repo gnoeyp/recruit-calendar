@@ -13,11 +13,10 @@ type CalendarProps = {
 
 export default function Calendar({ jobOpenings = [] }: CalendarProps) {
   const { yearMonth, onChange } = useYearMonth();
-  if (!yearMonth) {
-    return <div>Loading...</div>;
-  }
 
   const jobOpeningData = useMemo(() => {
+    if (!yearMonth) return [];
+
     const date = new Date(yearMonth.year, yearMonth.month - 1, 1);
 
     while (date.getDay() !== 0) {
@@ -50,6 +49,10 @@ export default function Calendar({ jobOpenings = [] }: CalendarProps) {
       ),
     }));
   }, [yearMonth, jobOpenings]);
+
+  if (!yearMonth) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col gap-3 items-center pt-3">

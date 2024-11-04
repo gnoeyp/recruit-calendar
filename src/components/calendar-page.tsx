@@ -3,8 +3,8 @@
 import { Duty } from '@/models/Duty';
 import { JobOpening } from '@/models/job-opening';
 import { useState } from 'react';
-import CheckboxTree, { CheckboxTreeItem } from './checkbox-tree/checkbox-tree';
 import Calendar from './calendar';
+import CheckboxTree, { CheckboxTreeItem } from './checkbox-tree';
 
 type CalendarPageProps = {
   jobOpenings: JobOpening[];
