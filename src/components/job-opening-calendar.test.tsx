@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, vi, expect, beforeEach, afterEach } from 'vitest';
 import { useParams, useRouter } from 'next/navigation';
-import Calendar from './calendar';
+import JobOpeningCalendar from './job-opening-calendar';
 
 const mockedPush = vi.fn();
 const mockedUseRouterReturn = { push: mockedPush };
@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
   useParams: vi.fn(),
 }));
 
-describe('Calendar', () => {
+describe('JobOpeningCalendar', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -21,7 +21,7 @@ describe('Calendar', () => {
 
   it('올바른 날짜를 표시한다.', () => {
     vi.mocked(useParams).mockReturnValue({ yearmonth: '2024-01' });
-    render(<Calendar />);
+    render(<JobOpeningCalendar />);
     expect(screen.getByRole('heading')).toHaveTextContent('2024 - 1');
   });
 
@@ -29,21 +29,21 @@ describe('Calendar', () => {
     const date = new Date(2024, 0);
     vi.setSystemTime(date);
     vi.mocked(useParams).mockReturnValue({ yearmonth: '2024-13' });
-    render(<Calendar />);
+    render(<JobOpeningCalendar />);
     expect(useRouter().push).toHaveBeenCalledWith('/2024-01');
 
     vi.mocked(useParams).mockReturnValue({ yearmonth: '2024-12-01' });
-    render(<Calendar />);
+    render(<JobOpeningCalendar />);
     expect(useRouter().push).toHaveBeenCalledWith('/2024-01');
 
     vi.mocked(useParams).mockReturnValue({ yearmonth: '1' });
-    render(<Calendar />);
+    render(<JobOpeningCalendar />);
     expect(useRouter().push).toHaveBeenCalledWith('/2024-01');
   });
 
   it('초기 화면에서 Loading이 표시되지 않는다.', () => {
     vi.mocked(useParams).mockReturnValue({ yearmonth: '2024-01' });
-    render(<Calendar />);
+    render(<JobOpeningCalendar />);
     expect(screen.queryByText('Loading...')).toBeNull();
   });
 });

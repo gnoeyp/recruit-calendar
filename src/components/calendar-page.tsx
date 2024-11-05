@@ -3,8 +3,8 @@
 import { Duty } from '@/models/Duty';
 import { JobOpening } from '@/models/job-opening';
 import { useState } from 'react';
-import Calendar from './calendar';
-import CheckboxTree, { CheckboxTreeItem } from './checkbox-tree';
+import JobOpeningCalendar from './job-opening-calendar';
+import CheckboxTree, { CheckboxTreeItem } from './ui/checkbox-tree';
 
 type CalendarPageProps = {
   jobOpenings: JobOpening[];
@@ -38,7 +38,7 @@ export default function CalendarPage({
       <div className="px-5 pt-3 pb-6 bg-gray-100">
         <CheckboxTree title="직무" items={items} onChange={setDutyIds} />
       </div>
-      <Calendar jobOpenings={filteredJobOpenings} />
+      <JobOpeningCalendar jobOpenings={filteredJobOpenings} />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { JobOpening } from '@/models/job-opening';
-import TinyBadge from './tiny-badge';
+import TinyBadge from './ui/tiny-badge';
 
 type JobOpeningDisplayProps = {
   jobOpening: JobOpening;

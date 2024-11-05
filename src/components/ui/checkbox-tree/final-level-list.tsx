@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import BadgeCheckbox from '../badge-checkbox';
+import ToggleBadge from '../toggle-badge';
 import { CheckboxTreeItem } from './checkbox-tree.types';
 import { useCheckboxTree } from './checkbox-tree-context';
 
@@ -24,13 +24,13 @@ export default function FinalLevelList({ items }: BadgeListProps) {
     <div className="flex-1 px-6 py-4 bg-white">
       <div className="flex flex-wrap gap-2 w-full h-max">
         {treeItems.map((item) => (
-          <BadgeCheckbox
+          <ToggleBadge
             key={item.value}
             checked={item.checked}
             onChange={(checked) => onCheck(item.value, checked)}
           >
             {item.label}
-          </BadgeCheckbox>
+          </ToggleBadge>
         ))}
       </div>
     </div>

@@ -1,17 +1,17 @@
 import classNames from 'classnames';
 import { useId } from 'react';
 
-type BadgeCheckboxProps = {
+type ToggleBadgeProps = {
   children?: React.ReactNode;
   checked?: boolean;
   onChange?: (checked: boolean) => void;
 };
 
-export default function BadgeCheckbox({
+export default function ToggleBadge({
   children,
   checked,
   onChange,
-}: BadgeCheckboxProps) {
+}: ToggleBadgeProps) {
   const id = useId();
   return (
     <div
