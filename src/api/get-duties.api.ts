@@ -1,4 +1,4 @@
-import { Duty } from '@/models/Duty';
+import { Duty } from '@/models/duty';
 import { DutyDto } from './get-duties.dto';
 
 const hasParent = (duty: DutyDto): boolean => {

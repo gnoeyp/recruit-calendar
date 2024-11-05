@@ -1,6 +1,6 @@
 'use client';
 
-import { Duty } from '@/models/Duty';
+import { Duty } from '@/models/duty';
 import { JobOpening } from '@/models/job-opening';
 import { useState } from 'react';
 import JobOpeningCalendar from './job-opening-calendar';

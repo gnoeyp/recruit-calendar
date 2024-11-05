@@ -16,6 +16,7 @@ export default function JobOpeningCalendar({
 }: JobOpeningCalendarProps) {
   const { yearMonth, onChange } = useYearMonth();
 
+  // TODO: Refactoring
   const jobOpeningData = useMemo(() => {
     if (!yearMonth) return [];
 

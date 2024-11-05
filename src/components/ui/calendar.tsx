@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 const HEADER_HEIGHT = 40;
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THR', 'FRI', 'SAT'];
 
-type CalendarItem = {
+export type CalendarItem = {
   key: string;
   header: React.ReactNode;
   content: React.ReactNode;
@@ -26,7 +26,7 @@ export default function Calendar({ items }: CalendarProps) {
   );
 
   const [topIndex, setTopIndex] = useState(0);
-  const headers = rows[topIndex];
+  const headers = topIndex < rows.length ? rows[topIndex] : [];
 
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +44,7 @@ export default function Calendar({ items }: CalendarProps) {
       const secondTopElement = topRef.current?.children[topIndex + 1];
       const secondTopOffset =
         secondTopElement?.getBoundingClientRect().top ?? 0;
-      if (secondTopOffset < HEADER_HEIGHT) {
+      if (secondTopOffset < HEADER_HEIGHT && topIndex < rows.length - 1) {
         setTopIndex(topIndex + 1);
       }
     };
