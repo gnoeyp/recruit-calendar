@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+const HEADER_HEIGHT = 40;
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THR', 'FRI', 'SAT'];
 
 type CalendarItem = {
@@ -12,77 +13,38 @@ type CalendarProps = {
   items: CalendarItem[];
 };
 
-type CalenderCellProps = {
-  header: React.ReactNode;
-  content: React.ReactNode;
-};
-
-function CalendarCell({ header, content }: CalenderCellProps) {
-  const rootElementRef = useRef<HTMLDivElement>(null);
-  const headerElementRef = useRef<HTMLDivElement>(null);
-
-  const intersectionObserver = useMemo(
-    () =>
-      new IntersectionObserver(
-        ([e]) => {
-          if (e.intersectionRatio < 1) {
-            headerElementRef.current?.classList.add('shadow-md');
-          } else {
-            headerElementRef.current?.classList.remove('shadow-md');
-          }
-        },
-        {
-          root: rootElementRef.current,
-          threshold: [1],
-        },
-      ),
-    [],
-  );
-
-  useEffect(() => {
-    if (!headerElementRef.current) return;
-    intersectionObserver.observe(headerElementRef.current);
-  }, [intersectionObserver]);
-
-  return (
-    <div className="flex flex-col" ref={rootElementRef}>
-      <div
-        className="sticky -top-1 bg-white h-10 flex items-center justify-center"
-        ref={headerElementRef}
-      >
-        {header}
-      </div>
-      <div className="min-h-52">{content}</div>
-    </div>
-  );
-}
-
 export default function Calendar({ items }: CalendarProps) {
-  const rows = [
-    items.slice(0, 7),
-    items.slice(7, 14),
-    items.slice(14, 21),
-    items.slice(21, 28),
-    items.slice(28),
-  ];
+  const rows = useMemo(
+    () => [
+      items.slice(0, 7),
+      items.slice(7, 14),
+      items.slice(14, 21),
+      items.slice(21, 28),
+      items.slice(28),
+    ],
+    [items],
+  );
 
   const [topIndex, setTopIndex] = useState(0);
   const headers = rows[topIndex];
 
   const topRef = useRef<HTMLDivElement>(null);
 
+  // XXX:
+  // - 직접적인 DOM 조작. 개선 여지 있을지 고민해보기
+  // - HEADER_HEIGHT 계산 방법 있는지
   useEffect(() => {
     const eventListener = () => {
       const topElement = topRef.current?.children[topIndex];
       const topOffset = topElement?.getBoundingClientRect().top ?? 0;
-      if (topOffset > 80 && topIndex > 0) {
+      if (topOffset > HEADER_HEIGHT && topIndex > 0) {
         setTopIndex(topIndex - 1);
       }
 
       const secondTopElement = topRef.current?.children[topIndex + 1];
       const secondTopOffset =
         secondTopElement?.getBoundingClientRect().top ?? 0;
-      if (secondTopOffset < 80) {
+      if (secondTopOffset < HEADER_HEIGHT) {
         setTopIndex(topIndex + 1);
       }
     };
