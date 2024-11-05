@@ -6,23 +6,25 @@ import { useState } from 'react';
 import JobOpeningCalendar from './job-opening-calendar';
 import CheckboxTree, { CheckboxTreeItem } from './ui/checkbox-tree';
 
+const TITLE = '직무';
+
 type CalendarPageProps = {
   jobOpenings: JobOpening[];
   duties: Duty[];
 };
+
+const constructTree = (duties: Duty[]): CheckboxTreeItem[] =>
+  duties.map((duty) => ({
+    label: duty.name,
+    value: duty.id,
+    children: constructTree(duty.children),
+  }));
 
 export default function CalendarPage({
   jobOpenings,
   duties,
 }: CalendarPageProps) {
   const [dutyIds, setDutyIds] = useState<string[]>([]);
-
-  const constructTree = (duties: Duty[]): CheckboxTreeItem[] =>
-    duties.map((duty) => ({
-      label: duty.name,
-      value: duty.id,
-      children: constructTree(duty.children),
-    }));
 
   const items = constructTree(duties);
 
@@ -36,7 +38,7 @@ export default function CalendarPage({
   return (
     <div>
       <div className="px-5 pt-3 pb-6 bg-gray-100">
-        <CheckboxTree title="직무" items={items} onChange={setDutyIds} />
+        <CheckboxTree title={TITLE} items={items} onChange={setDutyIds} />
       </div>
       <JobOpeningCalendar jobOpenings={filteredJobOpenings} />
     </div>
