@@ -37,8 +37,8 @@ describe('FinalLevelList', () => {
     const item1Checkbox = screen.getByLabelText('Item 1') as HTMLInputElement;
     const item2Checkbox = screen.getByLabelText('Item 2') as HTMLInputElement;
 
-    expect(item1Checkbox.ariaChecked).toBe('true');
-    expect(item2Checkbox.ariaChecked).toBe('false');
+    expect(item1Checkbox.checked).toBe(true);
+    expect(item2Checkbox.checked).toBe(false);
   });
 
   it('항목이 체크될 때 올바른 인수로 onCheck를 호출합니다', () => {
