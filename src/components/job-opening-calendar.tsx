@@ -66,6 +66,11 @@ export default function JobOpeningCalendar({
     return <div>Loading...</div>;
   }
 
+  const sortedJobOpenings = jobOpeningData.flatMap((data) => [
+    ...data.startingJobOpenings,
+    ...data.endingJobOpenings,
+  ]);
+
   const [open, setOpen] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
@@ -73,7 +78,7 @@ export default function JobOpeningCalendar({
     <div className="flex flex-col py-3 gap-5 items-center">
       <CarouselDialog
         open={open}
-        dataSource={jobOpenings}
+        dataSource={sortedJobOpenings}
         render={(data) => (
           <CarouselDialogContent>
             <CarouselDialogHeader>
@@ -117,7 +122,7 @@ export default function JobOpeningCalendar({
                   jobOpening={opening}
                   status="starting"
                   onClick={() => {
-                    const index = jobOpenings.findIndex(
+                    const index = sortedJobOpenings.findIndex(
                       (jobOpening) => jobOpening.id === opening.id,
                     );
                     setCarouselIndex(index);
@@ -131,7 +136,7 @@ export default function JobOpeningCalendar({
                   jobOpening={opening}
                   status="ending"
                   onClick={() => {
-                    const index = jobOpenings.findIndex(
+                    const index = sortedJobOpenings.findIndex(
                       (jobOpening) => jobOpening.id === opening.id,
                     );
                     setCarouselIndex(index);
