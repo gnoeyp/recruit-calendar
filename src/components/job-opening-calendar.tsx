@@ -15,6 +15,8 @@ import CarouselDialog, {
 } from './ui/carousel-dialog';
 import Image from 'next/image';
 import { formatDate } from '@/utils/format-date';
+import { getCalendarDateList } from '@/utils/get-calendar-date-list';
+import { areSameDates } from '@/utils/are-same-dates';
 
 type JobOpeningCalendarProps = {
   jobOpenings?: JobOpening[];
@@ -25,46 +27,23 @@ export default function JobOpeningCalendar({
 }: JobOpeningCalendarProps) {
   const { yearMonth, onChange } = useYearMonth();
 
-  // TODO: Refactoring
   const jobOpeningData = useMemo(() => {
     if (!yearMonth) return [];
 
-    const date = new Date(yearMonth.year, yearMonth.month - 1, 1);
-
-    while (date.getDay() !== 0) {
-      date.setDate(date.getDate() - 1);
-    }
-
-    const dates: Date[] = [];
-
-    while (true) {
-      dates.push(new Date(date));
-      date.setDate(date.getDate() + 1);
-      if (date.getMonth() === yearMonth.month % 12 && date.getDay() === 0) {
-        break;
-      }
-    }
+    const dates = getCalendarDateList(yearMonth.year, yearMonth.month);
 
     return dates.map((date) => ({
       date: date,
       startingJobOpenings: jobOpenings.filter(
         (jobOpening) =>
-          jobOpening.startTime?.getFullYear() === date.getFullYear() &&
-          jobOpening.startTime?.getMonth() === date.getMonth() &&
-          jobOpening.startTime?.getDate() === date.getDate(),
+          jobOpening.startTime && areSameDates(jobOpening.startTime, date),
       ),
       endingJobOpenings: jobOpenings.filter(
         (jobOpening) =>
-          jobOpening.endTime?.getFullYear() === date.getFullYear() &&
-          jobOpening.endTime?.getMonth() === date.getMonth() &&
-          jobOpening.endTime?.getDate() === date.getDate(),
+          jobOpening.endTime && areSameDates(jobOpening.endTime, date),
       ),
     }));
   }, [yearMonth, jobOpenings]);
-
-  if (!yearMonth) {
-    return <div>Loading...</div>;
-  }
 
   const sortedJobOpenings = jobOpeningData.flatMap((data) => [
     ...data.startingJobOpenings,
@@ -73,6 +52,10 @@ export default function JobOpeningCalendar({
 
   const [open, setOpen] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
+
+  if (!yearMonth) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col py-3 gap-5 items-center">
