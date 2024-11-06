@@ -67,6 +67,7 @@ export default function JobOpeningCalendar({
   }
 
   const [open, setOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   return (
     <div className="flex flex-col py-3 gap-5 items-center">
@@ -96,6 +97,8 @@ export default function JobOpeningCalendar({
           </CarouselDialogContent>
         )}
         onOpenChange={setOpen}
+        current={carouselIndex}
+        onChange={setCarouselIndex}
       />
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
       <Calendar
@@ -113,7 +116,13 @@ export default function JobOpeningCalendar({
                   key={`starting-${opening.id}`}
                   jobOpening={opening}
                   status="starting"
-                  onClick={() => setOpen(true)}
+                  onClick={() => {
+                    const index = jobOpenings.findIndex(
+                      (jobOpening) => jobOpening.id === opening.id,
+                    );
+                    setCarouselIndex(index);
+                    setOpen(true);
+                  }}
                 />
               ))}
               {data.endingJobOpenings.map((opening) => (
@@ -121,7 +130,13 @@ export default function JobOpeningCalendar({
                   key={`ending-${opening.id}`}
                   jobOpening={opening}
                   status="ending"
-                  onClick={() => setOpen(true)}
+                  onClick={() => {
+                    const index = jobOpenings.findIndex(
+                      (jobOpening) => jobOpening.id === opening.id,
+                    );
+                    setCarouselIndex(index);
+                    setOpen(true);
+                  }}
                 />
               ))}
             </>
