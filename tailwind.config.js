@@ -14,8 +14,8 @@ module.exports = {
         },
       },
       animation: {
-        'carousel-next': 'carousel-next 0.3s ease-in-out',
-        'carousel-prev': 'carousel-prev 0.3s ease-in-out',
+        'carousel-next': 'carousel-next 0.3s ease-in-out forwards',
+        'carousel-prev': 'carousel-prev 0.3s ease-in-out forwards',
       },
     },
   },
