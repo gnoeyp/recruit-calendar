@@ -6,8 +6,15 @@ import { JobOpening } from '@/models/job-opening';
 import DateNavigator from './ui/date-navigator';
 import JobOpeningDisplay from './job-opening-display';
 import Calendar from './ui/calendar';
-import CarouselDialog from './ui/carousel-dialog';
+import CarouselDialog, {
+  CarouselDialogContent,
+  CarouselDialogDescription,
+  CarouselDialogHeader,
+  CarouselDialogHeading,
+  CarouselDialogTitle,
+} from './ui/carousel-dialog';
 import Image from 'next/image';
+import { formatDate } from '@/utils/format-date';
 
 type JobOpeningCalendarProps = {
   jobOpenings?: JobOpening[];
@@ -67,29 +74,26 @@ export default function JobOpeningCalendar({
         open={open}
         dataSource={jobOpenings}
         render={(data) => (
-          <div className="flex flex-col pt-10 gap-5">
-            <div className="flex flex-col px-5">
-              <h2 className="font-medium text-lg mb-4">{data.companyName}</h2>
-              <h1 className="font-semibold text-2xl mb-1">{data.title}</h1>
-              <p className="text-sm text-gray-400">
-                {data.startTime?.toDateString()} ~{' '}
-                {data.endTime?.toDateString()}
-              </p>
-            </div>
-            <div>
-              <Image
-                src={data.imageUrl ?? ''}
-                alt={data.companyName ?? ''}
-                width={0}
-                height={0}
-                sizes="100vw"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                }}
-              />
-            </div>
-          </div>
+          <CarouselDialogContent>
+            <CarouselDialogHeader>
+              <CarouselDialogHeading>{data.companyName}</CarouselDialogHeading>
+              <CarouselDialogTitle>{data.title}</CarouselDialogTitle>
+              <CarouselDialogDescription>
+                {formatDate(data.startTime)} ~ {formatDate(data.endTime)}
+              </CarouselDialogDescription>
+            </CarouselDialogHeader>
+            <Image
+              src={data.imageUrl ?? ''}
+              alt={data.companyName ?? ''}
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+          </CarouselDialogContent>
         )}
         onOpenChange={setOpen}
       />
@@ -117,6 +121,7 @@ export default function JobOpeningCalendar({
                   key={`ending-${opening.id}`}
                   jobOpening={opening}
                   status="ending"
+                  onClick={() => setOpen(true)}
                 />
               ))}
             </>
