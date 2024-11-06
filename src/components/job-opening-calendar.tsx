@@ -1,11 +1,13 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import useYearMonth from '@/lib/use-year-month';
 import { JobOpening } from '@/models/job-opening';
 import DateNavigator from './ui/date-navigator';
 import JobOpeningDisplay from './job-opening-display';
 import Calendar from './ui/calendar';
+import CarouselDialog from './ui/carousel-dialog';
+import Image from 'next/image';
 
 type JobOpeningCalendarProps = {
   jobOpenings?: JobOpening[];
@@ -57,8 +59,40 @@ export default function JobOpeningCalendar({
     return <div>Loading...</div>;
   }
 
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="flex flex-col py-3 gap-5 items-center">
+      <CarouselDialog
+        open={open}
+        dataSource={jobOpenings}
+        render={(data) => (
+          <div className="flex flex-col pt-10 gap-5">
+            <div className="flex flex-col px-5">
+              <h2 className="font-medium text-lg mb-4">{data.companyName}</h2>
+              <h1 className="font-semibold text-2xl mb-1">{data.title}</h1>
+              <p className="text-sm text-gray-400">
+                {data.startTime?.toDateString()} ~{' '}
+                {data.endTime?.toDateString()}
+              </p>
+            </div>
+            <div>
+              <Image
+                src={data.imageUrl ?? ''}
+                alt={data.companyName ?? ''}
+                width={0}
+                height={0}
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
+              />
+            </div>
+          </div>
+        )}
+        onOpenChange={setOpen}
+      />
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
       <Calendar
         items={jobOpeningData.map((data) => ({
@@ -75,6 +109,7 @@ export default function JobOpeningCalendar({
                   key={`starting-${opening.id}`}
                   jobOpening={opening}
                   status="starting"
+                  onClick={() => setOpen(true)}
                 />
               ))}
               {data.endingJobOpenings.map((opening) => (
