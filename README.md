@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 기술 스택
 
-## Getting Started
+### Framework
 
-First, run the development server:
+- Next.js v15 App Router
+  - Stable 버전 사용했습니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### UI
+
+- TailwindCSS
+- Radix UI
+
+  - Carousel Dialog 구현을 위해 Radix Dialog의 Portal, Overlay를 사용했습니다.
+
+- 디자인 시스템이 적용된 UI 라이브러리는 사용하지 않았습니다.
+
+### Testing
+
+- Vitest
+- React Testing Library
+
+## 폴더 구조
+
+```
+  ├── app
+  ├── components
+  │   └── ui
+  ├── api
+  ├── hooks
+  ├── models
+  └── utils
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `app`: Layout, page 컴포넌트
+- `components`: 컴포넌트
+  - `ui`: 도메인과 무관한 UI 컴포넌트
+- `api`: API 호출 함수
+- `hooks`: 커스텀 훅
+- `models`: 데이터 모델
+- `utils`: 유틸리티 함수 및 클래스
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 상태 관리
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- CheckboxTree 컴포넌트의 checkedValues 상태를 관리하기 위해 ContextAPI 사용.
 
-## Learn More
+## API 통신
 
-To learn more about Next.js, take a look at the following resources:
+- interceptor 등 복잡한 설정이 필요하지 않아 fetch를 사용했습니다.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 서버로부터 반환되는 데이터의 타입인 DTO 타입을 \*.dto.ts에 정의하고 API 함수는 dto 객체를 클라이언트에서 사용할 수 있는 model로 변환하여 반환합니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 테스트
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 각 컴포넌트, 함수에 단위 테스트 작성
