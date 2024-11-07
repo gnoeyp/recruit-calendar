@@ -1,9 +1,24 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { cn } from '@/utils/style';
+
+const SLIDE_DELAY = 100;
+
+enum CarouselAnimation {
+  PREV = 'prev',
+  NEXT = 'next',
+  IDLE = 'idle',
+}
+
+type CarouselState = {
+  prevIndex: number;
+  currentIndex: number;
+  nextIndex: number;
+  animation: CarouselAnimation;
+};
 
 type CarouselDialogProps<T> = {
   open?: boolean;
@@ -12,13 +27,6 @@ type CarouselDialogProps<T> = {
   render: (data: T) => React.ReactElement;
   current?: number;
   onChange?: (index: number) => void;
-};
-
-type CarouselState = {
-  prevIndex: number;
-  currentIndex: number;
-  nextIndex: number;
-  animation: 'prev' | 'next' | null;
 };
 
 export default function CarouselDialog<DataType>({
@@ -40,7 +48,7 @@ export default function CarouselDialog<DataType>({
     prevIndex: current - 1,
     currentIndex: current,
     nextIndex: current + 1,
-    animation: null,
+    animation: CarouselAnimation.IDLE,
   });
 
   useEffect(() => {
@@ -48,17 +56,17 @@ export default function CarouselDialog<DataType>({
       prevIndex: current - 1,
       currentIndex: current,
       nextIndex: current + 1,
-      animation: null,
+      animation: CarouselAnimation.IDLE,
     });
   }, [current]);
 
   const goPrevious = () => {
     if (state.currentIndex === 0) return;
-    if (state.animation !== null) return;
+    if (state.animation !== CarouselAnimation.IDLE) return;
 
     setState((prevState) => ({
       ...prevState,
-      animation: 'prev',
+      animation: CarouselAnimation.PREV,
     }));
   };
 
@@ -67,12 +75,12 @@ export default function CarouselDialog<DataType>({
   };
 
   const handleAnimationEnd = () => {
-    if (state.animation === 'prev') {
+    if (state.animation === CarouselAnimation.PREV) {
       setState((prevState) => ({
         ...prevState,
         currentIndex: prevState.prevIndex,
       }));
-    } else if (state.animation === 'next') {
+    } else if (state.animation === CarouselAnimation.NEXT) {
       setState((prevState) => ({
         ...prevState,
         currentIndex: prevState.nextIndex,
@@ -85,10 +93,10 @@ export default function CarouselDialog<DataType>({
           ...prevState,
           prevIndex: prevState.currentIndex - 1,
           nextIndex: prevState.currentIndex + 1,
-          animation: null,
+          animation: CarouselAnimation.IDLE,
         };
       });
-    }, 100);
+    }, SLIDE_DELAY);
   };
 
   useEffect(() => {
@@ -101,11 +109,11 @@ export default function CarouselDialog<DataType>({
 
   const goNext = () => {
     if (state.currentIndex === dataSource.length - 1) return;
-    if (state.animation !== null) return;
+    if (state.animation !== CarouselAnimation.IDLE) return;
 
     setState((prevState) => ({
       ...prevState,
-      animation: 'next',
+      animation: CarouselAnimation.NEXT,
     }));
   };
 
@@ -116,23 +124,28 @@ export default function CarouselDialog<DataType>({
           className="fixed inset-0 bg-black pb-10 bg-opacity-50 z-50 flex justify-center overflow-y-scroll"
           onClick={handleClick}
         >
-          <button
-            onClick={(e) => {
-              goPrevious();
-              e.stopPropagation();
-            }}
-            className="text-3xl fixed left-8 top-1/2 hover:bg-orange-500 rounded-full w-12 h-12 flex items-center justify-center"
-          >
-            <FaChevronLeft color="#fff" />
-          </button>
+          {current > 0 && (
+            <button
+              onClick={(e) => {
+                goPrevious();
+                e.stopPropagation();
+              }}
+              className="text-3xl fixed left-8 top-1/2 hover:bg-orange-500 rounded-full w-12 h-12 flex items-center justify-center"
+              aria-label="move to previous slide"
+            >
+              <FaChevronLeft color="#fff" />
+            </button>
+          )}
           <div
             className="relative top-10 h-max bg-white shadow-2xl min-h-screen w-[900px] overflow-hidden rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div
               className={cn('relative  h-max flex w-[2700px] -left-[900px]', {
-                'animate-carousel-prev': state.animation === 'prev',
-                'animate-carousel-next': state.animation === 'next',
+                'animate-carousel-prev':
+                  state.animation === CarouselAnimation.PREV,
+                'animate-carousel-next':
+                  state.animation === CarouselAnimation.NEXT,
               })}
               onAnimationEnd={handleAnimationEnd}
             >
@@ -151,15 +164,18 @@ export default function CarouselDialog<DataType>({
               </div>
             </div>
           </div>
-          <button
-            onClick={(e) => {
-              goNext();
-              e.stopPropagation();
-            }}
-            className="text-3xl fixed right-8 top-1/2 hover:bg-orange-500 rounded-full w-12 h-12 flex items-center justify-center"
-          >
-            <FaChevronRight color="#fff" />
-          </button>
+          {current < dataSource.length - 1 && (
+            <button
+              onClick={(e) => {
+                goNext();
+                e.stopPropagation();
+              }}
+              className="text-3xl fixed right-8 top-1/2 hover:bg-orange-500 rounded-full w-12 h-12 flex items-center justify-center"
+              aria-label="move to next slide"
+            >
+              <FaChevronRight color="#fff" />
+            </button>
+          )}
         </DialogPrimitive.Overlay>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

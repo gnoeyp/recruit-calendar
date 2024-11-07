@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import useYearMonth from '@/hooks/use-year-month';
 import { JobOpening } from '@/models/job-opening';
 import { formatDate } from '@/utils/format-date';
 import { getCalendarDateList } from '@/utils/get-calendar-date-list';
+import { dateKey } from '@/utils/date-key';
+import useVisited from '@/hooks/use-visited';
 import DateNavigator from './ui/date-navigator';
 import Calendar from './ui/calendar';
 import CarouselDialog, {
@@ -14,11 +17,8 @@ import CarouselDialog, {
   CarouselDialogHeading,
   CarouselDialogTitle,
 } from './ui/carousel-dialog';
-import Image from 'next/image';
-import useVisited from '@/hooks/use-visited';
 import CalendarListItem from './ui/calendar-list-item';
 import TinyBadge from './ui/tiny-badge';
-import { dateKey } from '@/utils/date-key';
 import {
   getCalendarItems,
   groupItemsByDate,
@@ -44,7 +44,7 @@ export default function JobOpeningCalendar({
     [calendarItems],
   );
 
-  const { yearMonth, onChange } = useYearMonth();
+  const { yearMonth, onChange: onYearMonthChange } = useYearMonth();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -67,9 +67,9 @@ export default function JobOpeningCalendar({
 
   useEffect(() => {
     if (calendarItems.length === 0) return;
-    const item = calendarItems[carouselIndex].jobOpening;
-    if (item.id != null && !visitedIds.includes(item.id)) {
-      setVisitedIds([...visitedIds, item.id]);
+    const { jobOpening } = calendarItems[carouselIndex];
+    if (jobOpening.id != null && !visitedIds.includes(jobOpening.id)) {
+      setVisitedIds([...visitedIds, jobOpening.id]);
     }
   }, [carouselIndex, setVisitedIds, visitedIds, calendarItems]);
 
@@ -112,7 +112,7 @@ export default function JobOpeningCalendar({
         current={carouselIndex}
         onChange={setCarouselIndex}
       />
-      <DateNavigator yearMonth={yearMonth} onChange={onChange} />
+      <DateNavigator yearMonth={yearMonth} onChange={onYearMonthChange} />
       <Calendar
         items={dates.map((date) => {
           const items = calendarItemsByDate.get(dateKey(date));
