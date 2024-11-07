@@ -3,6 +3,9 @@
 import { useMemo, useState } from 'react';
 import useYearMonth from '@/hooks/use-year-month';
 import { JobOpening } from '@/models/job-opening';
+import { formatDate } from '@/utils/format-date';
+import { getCalendarDateList } from '@/utils/get-calendar-date-list';
+import { areSameDates } from '@/utils/are-same-dates';
 import DateNavigator from './ui/date-navigator';
 import JobOpeningDisplay from './job-opening-display';
 import Calendar from './ui/calendar';
@@ -14,9 +17,6 @@ import CarouselDialog, {
   CarouselDialogTitle,
 } from './ui/carousel-dialog';
 import Image from 'next/image';
-import { formatDate } from '@/utils/format-date';
-import { getCalendarDateList } from '@/utils/get-calendar-date-list';
-import { areSameDates } from '@/utils/are-same-dates';
 
 type JobOpeningCalendarProps = {
   jobOpenings?: JobOpening[];
@@ -37,21 +37,30 @@ export default function JobOpeningCalendar({
 
     return dates.map((date) => ({
       date: date,
-      startingJobOpenings: jobOpenings.filter(
-        (jobOpening) =>
-          jobOpening.startTime && areSameDates(jobOpening.startTime, date),
-      ),
-      endingJobOpenings: jobOpenings.filter(
-        (jobOpening) =>
-          jobOpening.endTime && areSameDates(jobOpening.endTime, date),
-      ),
+      items: [
+        ...jobOpenings
+          .filter(
+            (item) => item.startTime && areSameDates(item.startTime, date),
+          )
+          .map<[JobOpening, 'starting']>((item) => [item, 'starting']),
+        ...jobOpenings
+          .filter((item) => item.endTime && areSameDates(item.endTime, date))
+          .map<[JobOpening, 'ending']>((item) => [item, 'ending']),
+      ],
     }));
   }, [yearMonth, jobOpenings]);
 
-  const sortedJobOpenings = cellDataList.flatMap((data) => [
-    ...data.startingJobOpenings,
-    ...data.endingJobOpenings,
-  ]);
+  const sortedJobOpenings = cellDataList.flatMap((data) =>
+    data.items.map(([item]) => item),
+  );
+
+  const handleClickJobOpening = (jobOpening: JobOpening) => {
+    const index = sortedJobOpenings.findIndex(
+      (item) => item.id === jobOpening.id,
+    );
+    setCarouselIndex(index);
+    setDialogOpen(true);
+  };
 
   if (!yearMonth) {
     return <div>Loading...</div>;
@@ -99,32 +108,12 @@ export default function JobOpeningCalendar({
           ),
           content: (
             <>
-              {data.startingJobOpenings.map((opening) => (
+              {data.items.map(([opening, status]) => (
                 <JobOpeningDisplay
-                  key={`starting-${opening.id}`}
+                  key={`${status}-${opening.id}`}
                   jobOpening={opening}
-                  status="starting"
-                  onClick={() => {
-                    const index = sortedJobOpenings.findIndex(
-                      (jobOpening) => jobOpening.id === opening.id,
-                    );
-                    setCarouselIndex(index);
-                    setDialogOpen(true);
-                  }}
-                />
-              ))}
-              {data.endingJobOpenings.map((opening) => (
-                <JobOpeningDisplay
-                  key={`ending-${opening.id}`}
-                  jobOpening={opening}
-                  status="ending"
-                  onClick={() => {
-                    const index = sortedJobOpenings.findIndex(
-                      (jobOpening) => jobOpening.id === opening.id,
-                    );
-                    setCarouselIndex(index);
-                    setDialogOpen(true);
-                  }}
+                  status={status}
+                  onClick={() => handleClickJobOpening(opening)}
                 />
               ))}
             </>
