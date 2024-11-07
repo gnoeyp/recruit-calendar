@@ -24,6 +24,8 @@ import {
   groupItemsByDate,
 } from './job-opening-calendar.utils';
 import { JobOpeningStatus } from './job-opening-calendar.types';
+import { cn } from '@/utils/style';
+import { areSameDates } from '@/utils/are-same-dates';
 
 type JobOpeningCalendarProps = {
   jobOpenings?: JobOpening[];
@@ -119,7 +121,12 @@ export default function JobOpeningCalendar({
           return {
             key: String(date.getTime()),
             header: (
-              <div className="flex items-center justify-center">
+              <div
+                className={cn(
+                  'flex items-center justify-center w-full',
+                  areSameDates(date, new Date()) && 'bg-orange-500 text-white',
+                )}
+              >
                 {date.getDate()}
               </div>
             ),
