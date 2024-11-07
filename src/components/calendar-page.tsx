@@ -36,7 +36,7 @@ export default function CalendarPage({
         );
 
   return (
-    <div>
+    <div className="flex flex-col gap-5">
       <div className="px-5 pt-3 pb-6 bg-gray-100">
         <CheckboxTree title={TITLE} items={items} onChange={setDutyIds} />
       </div>
