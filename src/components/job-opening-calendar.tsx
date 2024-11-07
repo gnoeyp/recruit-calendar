@@ -7,7 +7,7 @@ import { formatDate } from '@/utils/format-date';
 import { getCalendarDateList } from '@/utils/get-calendar-date-list';
 import { areSameDates } from '@/utils/are-same-dates';
 import DateNavigator from './ui/date-navigator';
-import JobOpeningDisplay from './job-opening-display';
+import JobOpeningListItem from './job-opening-list-item';
 import Calendar from './ui/calendar';
 import CarouselDialog, {
   CarouselDialogContent,
@@ -109,7 +109,7 @@ export default function JobOpeningCalendar({
           content: (
             <>
               {data.items.map(([opening, status]) => (
-                <JobOpeningDisplay
+                <JobOpeningListItem
                   key={`${status}-${opening.id}`}
                   jobOpening={opening}
                   status={status}
