@@ -17,7 +17,6 @@ const tinyBadgeStyles = cva(
 );
 
 type TinyBadgeProps = {
-  blur?: boolean;
   children?: React.ReactNode;
   className?: string;
 } & VariantProps<typeof tinyBadgeStyles>;
