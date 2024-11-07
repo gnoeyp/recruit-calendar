@@ -14,7 +14,7 @@ type CalendarProps = {
 };
 
 export default function Calendar({ items }: CalendarProps) {
-  const rows = useMemo(
+  const weeks = useMemo(
     () => [
       items.slice(0, 7),
       items.slice(7, 14),
@@ -26,7 +26,7 @@ export default function Calendar({ items }: CalendarProps) {
   );
 
   const [topIndex, setTopIndex] = useState(0);
-  const headers = topIndex < rows.length ? rows[topIndex] : [];
+  const headers = topIndex < weeks.length ? weeks[topIndex] : [];
 
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +44,7 @@ export default function Calendar({ items }: CalendarProps) {
       const secondTopElement = topRef.current?.children[topIndex + 1];
       const secondTopOffset =
         secondTopElement?.getBoundingClientRect().top ?? 0;
-      if (secondTopOffset < HEADER_HEIGHT && topIndex < rows.length - 1) {
+      if (secondTopOffset < HEADER_HEIGHT && topIndex < weeks.length - 1) {
         setTopIndex(topIndex + 1);
       }
     };
@@ -69,7 +69,7 @@ export default function Calendar({ items }: CalendarProps) {
         ))}
       </div>
       <div ref={topRef}>
-        {rows.map((row, index) => (
+        {weeks.map((row, index) => (
           <div className="grid grid-cols-7 w-full" key={index}>
             {row.map((item) => {
               return (
