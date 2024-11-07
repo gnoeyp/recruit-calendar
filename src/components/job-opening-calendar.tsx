@@ -27,7 +27,10 @@ export default function JobOpeningCalendar({
 }: JobOpeningCalendarProps) {
   const { yearMonth, onChange } = useYearMonth();
 
-  const jobOpeningData = useMemo(() => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const cellDataList = useMemo(() => {
     if (!yearMonth) return [];
 
     const dates = getCalendarDateList(yearMonth.year, yearMonth.month);
@@ -45,13 +48,10 @@ export default function JobOpeningCalendar({
     }));
   }, [yearMonth, jobOpenings]);
 
-  const sortedJobOpenings = jobOpeningData.flatMap((data) => [
+  const sortedJobOpenings = cellDataList.flatMap((data) => [
     ...data.startingJobOpenings,
     ...data.endingJobOpenings,
   ]);
-
-  const [open, setOpen] = useState(false);
-  const [carouselIndex, setCarouselIndex] = useState(0);
 
   if (!yearMonth) {
     return <div>Loading...</div>;
@@ -59,7 +59,7 @@ export default function JobOpeningCalendar({
   return (
     <div className="flex flex-col py-3 gap-5 items-center">
       <CarouselDialog
-        open={open}
+        open={dialogOpen}
         dataSource={sortedJobOpenings}
         render={(data) => (
           <CarouselDialogContent>
@@ -85,12 +85,12 @@ export default function JobOpeningCalendar({
             />
           </CarouselDialogContent>
         )}
-        onOpenChange={setOpen}
+        onOpenChange={setDialogOpen}
         current={carouselIndex}
       />
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
       <Calendar
-        items={jobOpeningData.map((data) => ({
+        items={cellDataList.map((data) => ({
           key: data.date.toString(),
           header: (
             <div className="flex items-center justify-center">
@@ -109,7 +109,7 @@ export default function JobOpeningCalendar({
                       (jobOpening) => jobOpening.id === opening.id,
                     );
                     setCarouselIndex(index);
-                    setOpen(true);
+                    setDialogOpen(true);
                   }}
                 />
               ))}
@@ -123,7 +123,7 @@ export default function JobOpeningCalendar({
                       (jobOpening) => jobOpening.id === opening.id,
                     );
                     setCarouselIndex(index);
-                    setOpen(true);
+                    setDialogOpen(true);
                   }}
                 />
               ))}

@@ -14,6 +14,13 @@ type CarouselDialogProps<T> = {
   onChange?: (index: number) => void;
 };
 
+type CarouselState = {
+  prevIndex: number;
+  currentIndex: number;
+  nextIndex: number;
+  animation: 'prev' | 'next' | null;
+};
+
 export default function CarouselDialog<DataType>({
   open,
   onOpenChange,
@@ -22,24 +29,24 @@ export default function CarouselDialog<DataType>({
   current = 0,
   onChange,
 }: CarouselDialogProps<DataType>): React.ReactElement {
-  const [state, setState] = useState({
-    prev: current - 1,
-    cur: current,
-    next: current + 1,
-    animation: null as 'prev' | 'next' | null,
+  const [state, setState] = useState<CarouselState>({
+    prevIndex: current - 1,
+    currentIndex: current,
+    nextIndex: current + 1,
+    animation: null,
   });
 
   useEffect(() => {
     setState({
-      prev: current - 1,
-      cur: current,
-      next: current + 1,
+      prevIndex: current - 1,
+      currentIndex: current,
+      nextIndex: current + 1,
       animation: null,
     });
   }, [current]);
 
   const goPrevious = () => {
-    if (state.cur === 0) return;
+    if (state.currentIndex === 0) return;
     if (state.animation !== null) return;
 
     setState((prevState) => ({
@@ -56,22 +63,22 @@ export default function CarouselDialog<DataType>({
     if (state.animation === 'prev') {
       setState((prevState) => ({
         ...prevState,
-        cur: prevState.prev,
+        currentIndex: prevState.prevIndex,
       }));
     } else if (state.animation === 'next') {
       setState((prevState) => ({
         ...prevState,
-        cur: prevState.next,
+        currentIndex: prevState.nextIndex,
       }));
     }
 
     setTimeout(() => {
       setState((prevState) => {
-        onChange?.(prevState.cur);
+        onChange?.(prevState.currentIndex);
         return {
           ...prevState,
-          prev: prevState.cur - 1,
-          next: prevState.cur + 1,
+          prevIndex: prevState.currentIndex - 1,
+          nextIndex: prevState.currentIndex + 1,
           animation: null,
         };
       });
@@ -79,7 +86,7 @@ export default function CarouselDialog<DataType>({
   };
 
   const goNext = () => {
-    if (state.cur === dataSource.length - 1) return;
+    if (state.currentIndex === dataSource.length - 1) return;
     if (state.animation !== null) return;
 
     setState((prevState) => ({
@@ -105,7 +112,7 @@ export default function CarouselDialog<DataType>({
             <FaChevronLeft color="#fff" />
           </button>
           <div
-            className="relative top-10 h-max bg-white min-h-screen w-[900px] overflow-hidden rounded-lg"
+            className="relative top-10 h-max bg-white shadow-2xl min-h-screen w-[900px] overflow-hidden rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div
@@ -119,16 +126,17 @@ export default function CarouselDialog<DataType>({
               onAnimationEnd={handleAnimationEnd}
             >
               <div className="w-[900px] h-max max-h-52">
-                {state.prev >= 0 &&
-                  dataSource.length > state.prev &&
-                  render(dataSource[state.prev])}
+                {state.prevIndex >= 0 &&
+                  dataSource.length > state.prevIndex &&
+                  render(dataSource[state.prevIndex])}
               </div>
               <div className="w-[900px] h-max">
-                {dataSource.length > state.cur && render(dataSource[state.cur])}
+                {dataSource.length > state.currentIndex &&
+                  render(dataSource[state.currentIndex])}
               </div>
               <div className="w-[900px] h-max max-h-52">
-                {dataSource.length > state.next &&
-                  render(dataSource[state.next])}
+                {dataSource.length > state.nextIndex &&
+                  render(dataSource[state.nextIndex])}
               </div>
             </div>
           </div>
