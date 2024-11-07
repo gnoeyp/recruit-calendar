@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import classNames from 'classnames';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
@@ -9,7 +9,7 @@ type CarouselDialogProps<T> = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   dataSource: T[];
-  render: (data: T) => React.ReactNode;
+  render: (data: T) => React.ReactElement;
   current?: number;
   onChange?: (index: number) => void;
 };
@@ -21,20 +21,31 @@ export default function CarouselDialog<DataType>({
   render,
   current = 0,
   onChange,
-}: CarouselDialogProps<DataType>) {
-  const [animation, setAnimation] = useState<'prev' | 'next' | null>(null);
+}: CarouselDialogProps<DataType>): React.ReactElement {
+  const [state, setState] = useState({
+    prev: current - 1,
+    cur: current,
+    next: current + 1,
+    animation: null as 'prev' | 'next' | null,
+  });
+
+  useEffect(() => {
+    setState({
+      prev: current - 1,
+      cur: current,
+      next: current + 1,
+      animation: null,
+    });
+  }, [current]);
 
   const goPrevious = () => {
-    if (current === 0) return;
-    if (animation !== null) return;
+    if (state.cur === 0) return;
+    if (state.animation !== null) return;
 
-    setAnimation('prev');
-  };
-  const goNext = () => {
-    if (current === dataSource.length - 1) return;
-    if (animation !== null) return;
-
-    setAnimation('next');
+    setState((prevState) => ({
+      ...prevState,
+      animation: 'prev',
+    }));
   };
 
   const handleClick = () => {
@@ -42,13 +53,39 @@ export default function CarouselDialog<DataType>({
   };
 
   const handleAnimationEnd = () => {
-    if (animation === 'prev') {
-      onChange?.(current - 1);
-      setAnimation(null);
-    } else if (animation === 'next') {
-      onChange?.(current + 1);
-      setAnimation(null);
+    if (state.animation === 'prev') {
+      setState((prevState) => ({
+        ...prevState,
+        cur: prevState.prev,
+      }));
+    } else if (state.animation === 'next') {
+      setState((prevState) => ({
+        ...prevState,
+        cur: prevState.next,
+      }));
     }
+
+    setTimeout(() => {
+      setState((prevState) => {
+        onChange?.(prevState.cur);
+        return {
+          ...prevState,
+          prev: prevState.cur - 1,
+          next: prevState.cur + 1,
+          animation: null,
+        };
+      });
+    }, 100);
+  };
+
+  const goNext = () => {
+    if (state.cur === dataSource.length - 1) return;
+    if (state.animation !== null) return;
+
+    setState((prevState) => ({
+      ...prevState,
+      animation: 'next',
+    }));
   };
 
   return (
@@ -68,30 +105,30 @@ export default function CarouselDialog<DataType>({
             <FaChevronLeft color="#fff" />
           </button>
           <div
-            className="relative top-10 h-max bg-white min-h-52 w-[900px] overflow-hidden rounded-lg"
+            className="relative top-10 h-max bg-white min-h-screen w-[900px] overflow-hidden rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div
               className={classNames(
                 'relative  h-max flex w-[2700px] -left-[900px]',
                 {
-                  'animate-carousel-prev': animation === 'prev',
-                  'animate-carousel-next': animation === 'next',
+                  'animate-carousel-prev': state.animation === 'prev',
+                  'animate-carousel-next': state.animation === 'next',
                 },
               )}
               onAnimationEnd={handleAnimationEnd}
             >
               <div className="w-[900px] h-max max-h-52">
-                {current > 0 &&
-                  dataSource.length > current - 1 &&
-                  render(dataSource[current - 1])}
+                {state.prev >= 0 &&
+                  dataSource.length > state.prev &&
+                  render(dataSource[state.prev])}
               </div>
               <div className="w-[900px] h-max">
-                {dataSource.length > current && render(dataSource[current])}
+                {dataSource.length > state.cur && render(dataSource[state.cur])}
               </div>
               <div className="w-[900px] h-max max-h-52">
-                {dataSource.length > current + 1 &&
-                  render(dataSource[current + 1])}
+                {dataSource.length > state.next &&
+                  render(dataSource[state.next])}
               </div>
             </div>
           </div>

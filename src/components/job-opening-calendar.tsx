@@ -56,7 +56,6 @@ export default function JobOpeningCalendar({
   if (!yearMonth) {
     return <div>Loading...</div>;
   }
-
   return (
     <div className="flex flex-col py-3 gap-5 items-center">
       <CarouselDialog
@@ -72,6 +71,7 @@ export default function JobOpeningCalendar({
               </CarouselDialogDescription>
             </CarouselDialogHeader>
             <Image
+              key={data.id}
               src={data.imageUrl ?? ''}
               alt={data.companyName ?? ''}
               width={0}
@@ -81,12 +81,12 @@ export default function JobOpeningCalendar({
                 width: '100%',
                 height: 'auto',
               }}
+              loading="eager"
             />
           </CarouselDialogContent>
         )}
         onOpenChange={setOpen}
         current={carouselIndex}
-        onChange={setCarouselIndex}
       />
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
       <Calendar
