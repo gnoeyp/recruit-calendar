@@ -27,6 +27,8 @@ import { JobOpeningStatus } from './job-opening-calendar.types';
 import { cn } from '@/utils/style';
 import { areSameDates } from '@/utils/are-same-dates';
 
+const VISITED_KEY = 'visited';
+
 type JobOpeningCalendarProps = {
   jobOpenings?: JobOpening[];
 };
@@ -34,7 +36,7 @@ type JobOpeningCalendarProps = {
 export default function JobOpeningCalendar({
   jobOpenings = [],
 }: JobOpeningCalendarProps) {
-  const [visitedIds, setVisitedIds] = useVisited();
+  const [visitedIds, setVisitedIds] = useVisited(VISITED_KEY);
 
   const calendarItems = useMemo(
     () => getCalendarItems(jobOpenings, visitedIds),
