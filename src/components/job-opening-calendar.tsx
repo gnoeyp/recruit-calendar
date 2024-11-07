@@ -35,23 +35,27 @@ export default function JobOpeningCalendar({
 
     const dates = getCalendarDateList(yearMonth.year, yearMonth.month);
 
+    const isStarting = (item: JobOpening, date: Date) =>
+      item.startTime && areSameDates(item.startTime, date);
+    const isEnding = (item: JobOpening, date: Date) =>
+      item.endTime && areSameDates(item.endTime, date);
+
     return dates.map((date) => ({
       date: date,
       items: [
         ...jobOpenings
-          .filter(
-            (item) => item.startTime && areSameDates(item.startTime, date),
-          )
+          .filter((item) => isStarting(item, date))
           .map<[JobOpening, 'starting']>((item) => [item, 'starting']),
         ...jobOpenings
-          .filter((item) => item.endTime && areSameDates(item.endTime, date))
+          .filter((item) => isEnding(item, date))
           .map<[JobOpening, 'ending']>((item) => [item, 'ending']),
       ],
     }));
   }, [yearMonth, jobOpenings]);
 
-  const sortedJobOpenings = cellDataList.flatMap((data) =>
-    data.items.map(([item]) => item),
+  const sortedJobOpenings = useMemo(
+    () => cellDataList.flatMap((data) => data.items.map(([item]) => item)),
+    [cellDataList],
   );
 
   const handleClickJobOpening = (jobOpening: JobOpening) => {
