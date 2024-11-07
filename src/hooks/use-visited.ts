@@ -12,11 +12,13 @@ type UseVisitedReturn = [string[], (visited: string[]) => void];
  */
 export default function useVisited(): UseVisitedReturn {
   const [visitedIds, setVisitedIds] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
     const storedVisited = localStorage.getItem(VISITED_KEY);
     return storedVisited ? JSON.parse(storedVisited) : [];
   });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     localStorage.setItem(VISITED_KEY, JSON.stringify(visitedIds));
   }, [visitedIds]);
 

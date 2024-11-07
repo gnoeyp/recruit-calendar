@@ -16,19 +16,12 @@ export default function JobOpeningListItem({
   status,
   onClick,
 }: JobOpeningDisplayProps) {
-  const [visitedIds, setVisitedIds] = useVisited();
+  const [visitedIds] = useVisited();
 
   const visited = visitedIds.includes(jobOpening.id ?? '');
 
-  const handleClick = () => {
-    if (!visited && jobOpening.id != null) {
-      setVisitedIds([...visitedIds, jobOpening.id]);
-    }
-    onClick?.();
-  };
-
   return (
-    <CalendarListItem onClick={handleClick} dimmed={visited}>
+    <CalendarListItem onClick={onClick} dimmed={visited}>
       <div className="flex items-center gap-1 text-sm w-full">
         {status === 'starting' && <TinyBadge variant="light">시</TinyBadge>}
         {status === 'ending' && <TinyBadge variant="dark">끝</TinyBadge>}

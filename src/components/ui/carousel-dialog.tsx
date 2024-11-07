@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import { cn } from '@/utils/style';
@@ -29,6 +29,13 @@ export default function CarouselDialog<DataType>({
   current = 0,
   onChange,
 }: CarouselDialogProps<DataType>): React.ReactElement {
+  const timeoutRef = useRef<NodeJS.Timeout>();
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   const [state, setState] = useState<CarouselState>({
     prevIndex: current - 1,
     currentIndex: current,
@@ -72,9 +79,8 @@ export default function CarouselDialog<DataType>({
       }));
     }
 
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setState((prevState) => {
-        onChange?.(prevState.currentIndex);
         return {
           ...prevState,
           prevIndex: prevState.currentIndex - 1,
@@ -84,6 +90,14 @@ export default function CarouselDialog<DataType>({
       });
     }, 100);
   };
+
+  useEffect(() => {
+    onChangeRef.current?.(state.nextIndex - 1);
+  }, [state.nextIndex]);
+
+  useEffect(() => {
+    return () => clearTimeout(timeoutRef.current);
+  }, []);
 
   const goNext = () => {
     if (state.currentIndex === dataSource.length - 1) return;

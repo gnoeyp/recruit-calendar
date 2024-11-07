@@ -14,7 +14,7 @@ export default function CalendarListItem({
   return (
     <div
       className={cn(
-        'text-sm bg-white hover:bg-slate-100 cursor-pointer select-none px-2 py-0.5 w-ful',
+        'text-sm bg-white hover:bg-slate-100 cursor-pointer select-none px-2 py-0.5 w-full',
         dimmed && 'opacity-30',
       )}
       onClick={onClick}
