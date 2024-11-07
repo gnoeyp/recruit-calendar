@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import { cn } from '@/utils/style';
 import { useId } from 'react';
 
 type ToggleBadgeProps = {
@@ -16,7 +16,7 @@ export default function ToggleBadge({
   return (
     <label
       htmlFor={id}
-      className={classNames(
+      className={cn(
         'h-8 flex items-center justify-center px-4 rounded-full border cursor-pointer text-gray-400 w-max text-sm',
         !checked && 'bg-white hover:bg-gray-100',
         checked && 'bg-sky-100 text-gray-500 border-sky-300',

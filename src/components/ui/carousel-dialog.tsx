@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import classNames from 'classnames';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import { cn } from '@/utils/style';
 
 type CarouselDialogProps<T> = {
   open?: boolean;
@@ -116,13 +116,10 @@ export default function CarouselDialog<DataType>({
             onClick={(e) => e.stopPropagation()}
           >
             <div
-              className={classNames(
-                'relative  h-max flex w-[2700px] -left-[900px]',
-                {
-                  'animate-carousel-prev': state.animation === 'prev',
-                  'animate-carousel-next': state.animation === 'next',
-                },
-              )}
+              className={cn('relative  h-max flex w-[2700px] -left-[900px]', {
+                'animate-carousel-prev': state.animation === 'prev',
+                'animate-carousel-next': state.animation === 'next',
+              })}
               onAnimationEnd={handleAnimationEnd}
             >
               <div className="w-[900px] h-max max-h-52">

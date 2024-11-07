@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import { cn } from '@/utils/style';
 
 type TinyBadgeProps = {
   type?: 'light' | 'dark';
@@ -12,7 +12,7 @@ export default function TinyBadge({
 }: TinyBadgeProps) {
   return (
     <div
-      className={classNames(
+      className={cn(
         'w-4 h-4 inline-flex items-center justify-center rounded-md text-white text-xs',
         { 'bg-orange-500': type === 'light', 'bg-cyan-800': type === 'dark' },
       )}

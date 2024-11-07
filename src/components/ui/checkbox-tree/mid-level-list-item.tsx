@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import { cn } from '@/utils/style';
 import { useId } from 'react';
 
 type MidLevelListItemProps = {
@@ -23,7 +23,7 @@ export default function MidLevelListItem({
   const id = useId();
   return (
     <div
-      className={classNames(
+      className={cn(
         'flex gap-2 px-4 py-2 cursor-pointer hover:bg-gray-50 max-w-64 w-full',
         selected && 'bg-gray-50',
       )}
