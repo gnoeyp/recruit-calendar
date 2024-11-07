@@ -22,7 +22,7 @@ describe('JobOpeningCalendar', () => {
   it('올바른 날짜를 표시한다.', () => {
     vi.mocked(useParams).mockReturnValue({ yearmonth: '2024-01' });
     render(<JobOpeningCalendar />);
-    expect(screen.getByRole('heading')).toHaveTextContent('2024 - 1');
+    expect(screen.getByRole('heading')).toHaveTextContent('2024.01');
   });
 
   it('잘못된 날짜이면 현재 날짜로 라우팅한다.', () => {

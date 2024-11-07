@@ -19,7 +19,7 @@ export default function DateNavigator({
         <FaAngleLeft size={12} color="#888" />
       </button>
       <h1 className="text-xl text-orange-500 font-bold">
-        {yearMonth.year} - {yearMonth.month}
+        {yearMonth.year}.{String(yearMonth.month).padStart(2, '0')}
       </h1>
       <button
         onClick={() => onChange?.(yearMonth.nextMonth())}
