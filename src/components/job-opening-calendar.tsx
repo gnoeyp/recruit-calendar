@@ -19,14 +19,18 @@ import Image from 'next/image';
 import useVisited from '@/hooks/use-visited';
 import CalendarListItem from './ui/calendar-list-item';
 import TinyBadge from './ui/tiny-badge';
+import { dateKey } from '@/utils/date-key';
 
-type JobOpeningCalendarCellItem = {
+enum JobOpeningStatus {
+  STARTING = 'starting',
+  ENDING = 'ending',
+}
+
+type JobOpeningCalendarItem = {
+  jobOpening: JobOpening;
   date: Date;
-  items: {
-    jobOpening: JobOpening;
-    status: 'starting' | 'ending';
-    visited: boolean;
-  }[];
+  status: JobOpeningStatus;
+  visited: boolean;
 };
 
 type JobOpeningCalendarProps = {
@@ -36,67 +40,88 @@ type JobOpeningCalendarProps = {
 export default function JobOpeningCalendar({
   jobOpenings = [],
 }: JobOpeningCalendarProps) {
+  const [visitedIds, setVisitedIds] = useVisited();
+
+  const startingItems = useMemo(
+    () =>
+      jobOpenings.map((item) => ({
+        jobOpening: item,
+        date: item.startTime,
+        status: JobOpeningStatus.STARTING,
+        visited: item.id != null && visitedIds.includes(item.id),
+      })),
+    [jobOpenings, visitedIds],
+  );
+  const endingItems = useMemo(
+    () =>
+      jobOpenings.map((item) => ({
+        jobOpening: item,
+        date: item.endTime,
+        status: JobOpeningStatus.ENDING,
+        visited: item.id != null && visitedIds.includes(item.id),
+      })),
+    [jobOpenings, visitedIds],
+  );
+
+  const jobOpeningCalendarItems: JobOpeningCalendarItem[] = useMemo(
+    () =>
+      [...startingItems, ...endingItems].sort((a, b) => {
+        if (areSameDates(a.date, b.date) && a.status === b.status) {
+          return a.date.getTime() - b.date.getTime();
+        } else if (areSameDates(a.date, b.date)) {
+          return a.status === JobOpeningStatus.STARTING ? -1 : 1;
+        }
+        return a.date.getTime() - b.date.getTime();
+      }),
+    [startingItems, endingItems],
+  );
+
+  const dateMap = useMemo(() => {
+    const result = new Map<string, JobOpeningCalendarItem[]>();
+    jobOpeningCalendarItems.forEach((item) => {
+      const { date } = item;
+      const key = dateKey(date);
+      if (!result.has(key)) {
+        result.set(key, []);
+      }
+      result.get(key)?.push(item);
+    });
+    return result;
+  }, [jobOpeningCalendarItems]);
+
   const { yearMonth, onChange } = useYearMonth();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
-
-  const [visitedIds, setVisitedIds] = useVisited();
-
-  const cellDataList: JobOpeningCalendarCellItem[] = useMemo(() => {
-    if (!yearMonth) return [];
-
-    const dates = getCalendarDateList(yearMonth.year, yearMonth.month);
-
-    const isStarting = (item: JobOpening, date: Date) =>
-      item.startTime && areSameDates(item.startTime, date);
-    const isEnding = (item: JobOpening, date: Date) =>
-      item.endTime && areSameDates(item.endTime, date);
-
-    return dates.map((date) => ({
-      date: date,
-      items: [
-        ...jobOpenings
-          .filter((item) => isStarting(item, date))
-          .map((item) => ({
-            jobOpening: item,
-            status: 'starting' as const,
-            visited: item.id != null && visitedIds.includes(item.id),
-          })),
-        ...jobOpenings
-          .filter((item) => isEnding(item, date))
-          .map((item) => ({
-            jobOpening: item,
-            status: 'ending' as const,
-            visited: item.id != null && visitedIds.includes(item.id),
-          })),
-      ],
-    }));
-  }, [yearMonth, jobOpenings, visitedIds]);
-
-  const sortedJobOpenings = useMemo(
-    () =>
-      cellDataList.flatMap((data) =>
-        data.items.map(({ jobOpening }) => jobOpening),
-      ),
-    [cellDataList],
+  console.log(
+    carouselIndex,
+    jobOpeningCalendarItems[carouselIndex].date,
+    jobOpeningCalendarItems[carouselIndex].status,
   );
 
-  const handleClickJobOpening = (jobOpening: JobOpening) => {
-    const index = sortedJobOpenings.findIndex(
-      (item) => item.id === jobOpening.id,
+  const dates = useMemo(() => {
+    if (!yearMonth) return [];
+    return getCalendarDateList(yearMonth.year, yearMonth.month);
+  }, [yearMonth]);
+
+  const handleClickJobOpening = (
+    jobOpening: JobOpening,
+    status: JobOpeningStatus,
+  ) => {
+    const index = jobOpeningCalendarItems.findIndex(
+      (item) => item.jobOpening.id === jobOpening.id && item.status === status,
     );
     setCarouselIndex(index);
     setDialogOpen(true);
   };
 
   useEffect(() => {
-    if (sortedJobOpenings.length === 0) return;
-    const item = sortedJobOpenings[carouselIndex];
+    if (jobOpeningCalendarItems.length === 0) return;
+    const item = jobOpeningCalendarItems[carouselIndex].jobOpening;
     if (item.id != null && !visitedIds.includes(item.id)) {
       setVisitedIds([...visitedIds, item.id]);
     }
-  }, [carouselIndex, setVisitedIds, sortedJobOpenings, visitedIds]);
+  }, [carouselIndex, setVisitedIds, visitedIds, jobOpeningCalendarItems]);
 
   if (!yearMonth) {
     return <div>Loading...</div>;
@@ -105,20 +130,23 @@ export default function JobOpeningCalendar({
     <div className="flex flex-col py-3 gap-5 items-center">
       <CarouselDialog
         open={dialogOpen}
-        dataSource={sortedJobOpenings}
+        dataSource={jobOpeningCalendarItems}
         render={(data) => (
           <CarouselDialogContent>
             <CarouselDialogHeader>
-              <CarouselDialogHeading>{data.companyName}</CarouselDialogHeading>
-              <CarouselDialogTitle>{data.title}</CarouselDialogTitle>
+              <CarouselDialogHeading>
+                {data.jobOpening.companyName}
+              </CarouselDialogHeading>
+              <CarouselDialogTitle>{data.jobOpening.title}</CarouselDialogTitle>
               <CarouselDialogDescription>
-                {formatDate(data.startTime)} ~ {formatDate(data.endTime)}
+                {formatDate(data.jobOpening.startTime)} ~{' '}
+                {formatDate(data.jobOpening.endTime)}
               </CarouselDialogDescription>
             </CarouselDialogHeader>
             <Image
-              key={data.id}
-              src={data.imageUrl ?? ''}
-              alt={data.companyName ?? ''}
+              key={data.jobOpening.id}
+              src={data.jobOpening.imageUrl}
+              alt={data.jobOpening.companyName ?? ''}
               width={0}
               height={0}
               sizes="100vw"
@@ -136,37 +164,39 @@ export default function JobOpeningCalendar({
       />
       <DateNavigator yearMonth={yearMonth} onChange={onChange} />
       <Calendar
-        items={cellDataList.map((data) => ({
-          key: data.date.toString(),
-          header: (
-            <div className="flex items-center justify-center">
-              {data.date.getDate()}
-            </div>
-          ),
-          content: (
-            <>
-              {data.items.map(({ jobOpening, status, visited }) => (
-                <CalendarListItem
-                  key={jobOpening.id}
-                  onClick={() => handleClickJobOpening(jobOpening)}
-                  dimmed={visited}
-                >
-                  <div className="flex items-center gap-1 text-sm w-full">
-                    {status === 'starting' && (
-                      <TinyBadge variant="light">시</TinyBadge>
-                    )}
-                    {status === 'ending' && (
-                      <TinyBadge variant="dark">끝</TinyBadge>
-                    )}
-                    <div className="flex-1 overflow-hidden text-nowrap">
-                      {jobOpening.companyName}
+        items={dates.map((date) => {
+          const items = dateMap.get(dateKey(date));
+          return {
+            key: String(date.getTime()),
+            header: (
+              <div className="flex items-center justify-center">
+                {date.getDate()}
+              </div>
+            ),
+            content: (
+              <>
+                {items?.map(({ jobOpening, status, visited }) => (
+                  <CalendarListItem
+                    key={jobOpening.id}
+                    onClick={() => handleClickJobOpening(jobOpening, status)}
+                    dimmed={visited}
+                  >
+                    <div className="flex items-center gap-1 text-sm w-full">
+                      {status === JobOpeningStatus.STARTING ? (
+                        <TinyBadge variant="light">시</TinyBadge>
+                      ) : (
+                        <TinyBadge variant="dark">끝</TinyBadge>
+                      )}
+                      <div className="flex-1 overflow-hidden text-nowrap">
+                        {jobOpening.companyName}
+                      </div>
                     </div>
-                  </div>
-                </CalendarListItem>
-              ))}
-            </>
-          ),
-        }))}
+                  </CalendarListItem>
+                ))}
+              </>
+            ),
+          };
+        })}
       />
     </div>
   );
