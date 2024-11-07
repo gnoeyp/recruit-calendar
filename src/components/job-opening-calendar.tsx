@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import useYearMonth from '@/lib/use-year-month';
+import useYearMonth from '@/hooks/use-year-month';
 import { JobOpening } from '@/models/job-opening';
 import DateNavigator from './ui/date-navigator';
 import JobOpeningDisplay from './job-opening-display';

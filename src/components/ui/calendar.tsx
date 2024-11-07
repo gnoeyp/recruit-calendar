@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import useCalendarHeader from '@/hooks/use-calendar-header';
+import { useMemo } from 'react';
 
 const HEADER_HEIGHT = 40;
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THR', 'FRI', 'SAT'];
@@ -25,34 +26,12 @@ export default function Calendar({ items }: CalendarProps) {
     [items],
   );
 
-  const [topIndex, setTopIndex] = useState(0);
-  const headers = topIndex < weeks.length ? weeks[topIndex] : [];
+  const { contentWrapperRef, headerIndex } = useCalendarHeader(
+    HEADER_HEIGHT,
+    weeks.length,
+  );
 
-  const topRef = useRef<HTMLDivElement>(null);
-
-  // XXX:
-  // - 직접적인 DOM 조작. 개선 여지 있을지 고민해보기
-  // - HEADER_HEIGHT 계산 방법 있는지
-  useEffect(() => {
-    const eventListener = () => {
-      const topElement = topRef.current?.children[topIndex];
-      const topOffset = topElement?.getBoundingClientRect().top ?? 0;
-      if (topOffset > HEADER_HEIGHT && topIndex > 0) {
-        setTopIndex(topIndex - 1);
-      }
-
-      const secondTopElement = topRef.current?.children[topIndex + 1];
-      const secondTopOffset =
-        secondTopElement?.getBoundingClientRect().top ?? 0;
-      if (secondTopOffset < HEADER_HEIGHT && topIndex < weeks.length - 1) {
-        setTopIndex(topIndex + 1);
-      }
-    };
-    window.addEventListener('scroll', eventListener);
-    return () => {
-      window.removeEventListener('scroll', eventListener);
-    };
-  }, [topIndex]);
+  const headers = headerIndex < weeks.length ? weeks[headerIndex] : [];
 
   return (
     <div className="w-full">
@@ -68,7 +47,7 @@ export default function Calendar({ items }: CalendarProps) {
           <Header key={headerItem.key}>{headerItem.header}</Header>
         ))}
       </div>
-      <div ref={topRef}>
+      <div ref={contentWrapperRef}>
         {weeks.map((row, index) => (
           <div className="grid grid-cols-7 w-full" key={index}>
             {row.map((item) => {
