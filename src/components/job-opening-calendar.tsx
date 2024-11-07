@@ -91,8 +91,8 @@ export default function JobOpeningCalendar({
   };
 
   useEffect(() => {
+    if (sortedJobOpenings.length === 0) return;
     const item = sortedJobOpenings[carouselIndex];
-    console.log(item.id);
     if (item.id != null && !visitedIds.includes(item.id)) {
       setVisitedIds([...visitedIds, item.id]);
     }
