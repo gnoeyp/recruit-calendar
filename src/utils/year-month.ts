@@ -37,4 +37,9 @@ export class YearMonth {
   toString(): string {
     return `${this._year}-${String(this._month).padStart(2, '0')}`;
   }
+
+  static current(): YearMonth {
+    const date = new Date();
+    return new YearMonth(date.getFullYear(), date.getMonth() + 1);
+  }
 }
