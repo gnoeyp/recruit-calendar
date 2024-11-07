@@ -18,6 +18,11 @@ const createYearMonth = (yearMonthStr: string): YearMonth | null => {
   }
 };
 
+/**
+ * 연-월 값을 URL params와 연동하여 관리하는 커스텀 훅입니다.
+ * URL 매개변수를 사용하여 초기 년-월 값을 결정하고, 다른 연-월 또는 현재 연-월로
+ * 라우팅하는 기능을 제공합니다.
+ */
 export default function useYearMonth() {
   const { yearmonth: yearMonthStr } = useParams<{ yearmonth: string }>();
   const [yearMonth, setYearMonth] = useState<YearMonth | null>(

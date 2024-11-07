@@ -26,10 +26,7 @@ export default function Calendar({ items }: CalendarProps) {
     [items],
   );
 
-  const { contentWrapperRef, headerIndex } = useCalendarHeader(
-    HEADER_HEIGHT,
-    weeks.length,
-  );
+  const { contentWrapperRef, headerIndex } = useCalendarHeader(HEADER_HEIGHT);
 
   const headers = headerIndex < weeks.length ? weeks[headerIndex] : [];
 
