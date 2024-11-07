@@ -23,6 +23,9 @@ import { useEffect, useRef, useState } from 'react';
  *      <div>
  *        // 높이 100인 헤더
  *      </div>
+ *      <div>
+ *        // 콘텐츠
+ *      </div>
  *    </div>
  *  )}
  * </div>
