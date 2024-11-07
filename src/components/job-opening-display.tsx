@@ -17,8 +17,8 @@ export default function JobOpeningDisplay({
       className="flex items-center gap-1 text-sm bg-white hover:bg-slate-100 cursor-pointer select-none px-2 py-0.5 w-full"
       onClick={onClick}
     >
-      {status === 'starting' && <TinyBadge type="light">시</TinyBadge>}
-      {status === 'ending' && <TinyBadge type="dark">끝</TinyBadge>}
+      {status === 'starting' && <TinyBadge variant="light">시</TinyBadge>}
+      {status === 'ending' && <TinyBadge variant="dark">끝</TinyBadge>}
       <div className="flex-1 overflow-hidden text-nowrap">
         {jobOpening.companyName}
       </div>

@@ -1,4 +1,5 @@
 import { cn } from '@/utils/style';
+import { cva } from 'class-variance-authority';
 import { useId } from 'react';
 
 type MidLevelListItemProps = {
@@ -10,6 +11,10 @@ type MidLevelListItemProps = {
   extra?: React.ReactNode;
   icon?: React.ReactNode;
 };
+
+const midLevelListItemStyles = cva(
+  'flex gap-2 px-4 py-2 cursor-pointer hover:bg-gray-50 max-w-64 w-full',
+);
 
 export default function MidLevelListItem({
   checked,
